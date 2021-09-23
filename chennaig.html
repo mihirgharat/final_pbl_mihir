@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<head>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  
+  <body>
+    <div id="myDiv" style="width: 510px; height: 500px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <script>
+    const url="https://airocity-server.herokuapp.com/get_aqi?code=Tam-22-1-8";
+      async function getdata(url){
+                    const res=await fetch(url);
+                    const datam=await res.json(); 
+                   console.log(datam.result.AQI);
+                   level=datam.result.AQI;
+                plott(level);
+                }
+                getdata(url);
+function plott(level){
+// Trig to calc meter point
+var degrees = 180 - level,
+	 radius = .5;
+var radians = degrees * Math.PI / 180;
+var x = radius * Math.cos(radians);
+var y = radius * Math.sin(radians);
+
+// Path: may have to change to create a better triangle
+var mainPath = 'M -.0 -0.025 L .0 0.025 L ',
+	 pathX = String(x),
+	 space = ' ',
+	 pathY = String(y),
+	 pathEnd = ' Z';
+var path = mainPath.concat(pathX,space,pathY,pathEnd);
+
+var data = [{ type: 'scatter',
+   x: [0], y:[0],
+	marker: {size: 28, color:'850000'},
+	showlegend: false,
+	name: 'speed',
+	text: level,
+	hoverinfo: 'text+name'},
+  { values: [50/6, 50/6, 50/6, 50/6, 50/6, 50/6, 50],
+  rotation: 90,
+  text: ['very poor', 'poor', 'bad', 'Average',
+			'satisfactory', 'excellent', ''],
+  textinfo: 'text',
+  textposition:'inside',	  
+  marker: {colors:['marron','red','purple','orange','yellow','green','white']},
+  labels: ['150-500','121-150','91-120','61-90','31-60','0-30',''],
+  hoverinfo: 'label',
+  hole: .5,
+  type: 'pie',
+  showlegend: false
+}];
+
+var layout = {
+  shapes:[{
+      type: 'path',
+      path: path,
+      fillcolor: '850000',
+      line: {
+        color: '850000'
+      }
+    }],
+  title: '<b>Gauge</b> <br> Visualization CHENNAI',
+  height: 500,
+  width: 500,
+  xaxis: {zeroline:false, showticklabels:false,
+			 showgrid: false, range: [-1, 1]},
+  yaxis: {zeroline:false, showticklabels:false,
+			 showgrid: false, range: [-1, 1]}
+};
+
+Plotly.newPlot('myDiv', data, layout, {showSendToCloud:true});
+}
+    </script>
+  </body>
+  </html>
